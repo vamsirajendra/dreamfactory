@@ -3,41 +3,35 @@
 namespace DreamFactory\Http\Middleware;
 
 use DreamFactory\Core\Models\User;
-use Illuminate\Contracts\Routing\Middleware;
 use Illuminate\Database\QueryException;
 use Closure;
 
 class FirstUserCheck
 {
-
     /**
-     * Handle an incoming request.
+     * @param          $request
+     * @param \Closure $next
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  \Closure                 $next
-     *
-     * @return mixed
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Exception
      */
     public function handle($request, Closure $next)
     {
         $route = $request->getPathInfo();
 
-        if ('/setup' !== $route) {
+        if ('/setup' !== $route && '/setup_db' !== $route) {
             try {
                 if (!User::adminExists()) {
                     return redirect()->to('/setup');
                 }
             } catch (QueryException $e) {
-                $code = $e->getCode();
+                try {
+                    //base table or view not found.
+                    \Cache::put('setup_db', true, config('df.default_cache_ttl'));
 
-                if($code === '42S02') {
-                    //Mysql base table or view not found.
-                    \Artisan::call('migrate');
-                    \Artisan::call('db:seed');
-
-                    return redirect()->to('/setup');
-                } else {
-                    throw $e;
+                    return redirect()->to('/setup_db');
+                } catch (\Exception $ex) {
+                    throw $ex;
                 }
             }
         }
