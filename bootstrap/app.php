@@ -11,15 +11,15 @@
 |
 */
 
-use DreamFactory\Managed\Support\Managed;
-use Monolog\Handler\StreamHandler;
+use DreamFactory\Core\LogHandlers\StreamHandler;
+use DreamFactory\Core\LogHandlers\SyslogHandler;
+use DreamFactory\Core\LogHandlers\ErrorLogHandler;
+use DreamFactory\Core\LogHandlers\RotatingFileHandler;
 use Monolog\Formatter\LineFormatter;
-use Monolog\Handler\SyslogHandler;
-use Monolog\Handler\ErrorLogHandler;
-use Monolog\Handler\RotatingFileHandler;
+use Monolog\Logger;
 
 $app = new Illuminate\Foundation\Application(
-    realpath(__DIR__ . '/../')
+    realpath(__DIR__.'/../')
 );
 
 /*
@@ -34,25 +34,25 @@ $app = new Illuminate\Foundation\Application(
 */
 
 $app->singleton(
-    'Illuminate\Contracts\Http\Kernel',
-    'DreamFactory\Http\Kernel'
+    Illuminate\Contracts\Http\Kernel::class,
+    DreamFactory\Http\Kernel::class
 );
 
 $app->singleton(
-    'Illuminate\Contracts\Console\Kernel',
-    'DreamFactory\Console\Kernel'
+    Illuminate\Contracts\Console\Kernel::class,
+    DreamFactory\Console\Kernel::class
 );
 
 $app->singleton(
-    'Illuminate\Contracts\Debug\ExceptionHandler',
-    'DreamFactory\Exceptions\Handler'
+    Illuminate\Contracts\Debug\ExceptionHandler::class,
+    DreamFactory\Exceptions\Handler::class
 );
 
-$app->configureMonologUsing(function ($monolog){
-    $logFile = storage_path('logs/dreamfactory.log');
-    if (!config('df.standalone')) {
-        $logFile = Managed::getLogFile();
-    }
+$app->configureMonologUsing(function (Logger $monolog){
+    $logFile =
+        env('DF_MANAGED_LOG_PATH', storage_path('logs')) .
+        DIRECTORY_SEPARATOR .
+        env('DF_MANAGED_LOG_FILE', 'dreamfactory.log');
 
     $mode = config('app.log');
 

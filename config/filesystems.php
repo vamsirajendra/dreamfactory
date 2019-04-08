@@ -8,14 +8,13 @@ return [
     |--------------------------------------------------------------------------
     |
     | Here you may specify the default filesystem disk that should be used
-    | by the framework. A "local" driver, as well as a variety of cloud
-    | based drivers are available for your choosing. Just store away!
-    |
-    | Supported: "local", "s3", "rackspace"
+    | by the framework. The "local" disk, as well as a variety of cloud
+    | based disks are available to your application. Just store away!
     |
     */
 
-    'default' => 'local',
+    'default' => env('FILESYSTEM_DRIVER', 'local'),
+
     /*
     |--------------------------------------------------------------------------
     | Default Cloud Filesystem Disk
@@ -27,7 +26,8 @@ return [
     |
     */
 
-    'cloud'   => 's3',
+    'cloud' => env('FILESYSTEM_CLOUD', 's3'),
+
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks
@@ -37,38 +37,31 @@ return [
     | may even configure multiple disks of the same driver. Defaults have
     | been setup for each driver as an example of the required options.
     |
+    | Supported Drivers: "local", "ftp", "s3", "rackspace"
+    |
     */
 
-    'disks'   => [
+    'disks' => [
 
-        'local'     => [
+        'local' => [
             'driver' => 'local',
-            'root'   => storage_path() . '/' . ltrim(env('DF_LOCAL_FILE_ROOT', 'app'), '/'),
+            'root' => storage_path('app'),
         ],
-        's3'        => [
+
+        'public' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+        ],
+
+        's3' => [
             'driver' => 's3',
-            'key'    => env('AWS_S3_KEY'),
-            'secret' => env('AWS_S3_SECRET'),
-            'region' => env('AWS_S3_REGION'),
-            'bucket' => env('AWS_S3_CONTAINER'),
+            'key' => env('AWS_ACCESS_KEY_ID', env('AWS_KEY')),
+            'secret' => env('AWS_SECRET_ACCESS_KEY', env('AWS_SECRET')),
+            'region' => env('AWS_DEFAULT_REGION', env('AWS_REGION')),
+            'bucket' => env('AWS_BUCKET'),
         ],
-        'rackspace' => [
-            'driver'       => 'rackspace',
-            'username'     => env('ROS_USERNAME'),
-            'password'     => env('ROS_PASSWORD'),
-            'tenant_name'  => env('ROS_TENANT_NAME'),
-            'container'    => env('ROS_CONTAINER'),
-            'url'          => env('ROS_URL'),
-            'region'       => env('ROS_REGION'),
-            'storage_type' => env('ROS_STORAGE_TYPE')
-        ],
-        'azure'     => [
-            'driver'       => 'azure',
-            'account_name' => env('AZURE_ACCOUNT_NAME'),
-            'account_key'  => env('AZURE_ACCOUNT_KEY'),
-            'protocol'     => 'https',
-            'container'    => env('AZURE_BLOB_CONTAINER')
-        ]
 
     ],
 

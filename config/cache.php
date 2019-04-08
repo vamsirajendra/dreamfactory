@@ -1,7 +1,5 @@
 <?php
 
-use DreamFactory\Managed\Support\Managed;
-
 return [
 
     /*
@@ -13,9 +11,12 @@ return [
     | using this caching library. This connection is used when another is
     | not explicitly specified when executing a given caching function.
     |
+    | Supported: "apc", "array", "database", "file", "memcached", "redis"
+    |
     */
 
     'default' => env('CACHE_DRIVER', 'file'),
+
     /*
     |--------------------------------------------------------------------------
     | Cache Stores
@@ -27,39 +28,53 @@ return [
     |
     */
 
-    'stores'  => [
+    'stores' => [
 
-        'apc'       => [
+        'apc' => [
             'driver' => 'apc',
         ],
-        'array'     => [
+
+        'array' => [
             'driver' => 'array',
         ],
-        'database'  => [
-            'driver'     => 'database',
-            'table'      => 'cache',
-            'connection' => null,
+
+        'database' => [
+            'driver' => 'database',
+            'table' => env('CACHE_TABLE', 'cache'),
+            'connection' => env('DB_CONNECTION', 'sqlite'),
         ],
-        'file'      => [
+
+        'file' => [
             'driver' => 'file',
-            'path'   => (env('DF_STANDALONE', true))? storage_path('framework/cache') : Managed::getCachePath(),
+            'path' => env('CACHE_PATH', env('DF_CACHE_PATH', storage_path('framework/cache/data'))),
         ],
-        'memcached' => [
-            'driver'  => 'memcached',
+
+        'memcached'  => [
+            'driver' => 'memcached',
+            'persistent_id' => env('CACHE_PERSISTENT_ID', env('MEMCACHED_PERSISTENT_ID')),
+            'sasl' => [
+                env('CACHE_USERNAME', env('MEMCACHED_USERNAME')),
+                env('CACHE_PASSWORD', env('MEMCACHED_PASSWORD')),
+            ],
+            'options' => [
+                // Memcached::OPT_CONNECT_TIMEOUT  => 2000,
+            ],
             'servers' => [
                 [
-                    'host'   => '127.0.0.1',
-                    'port'   => 11211,
-                    'weight' => 100,
+                    'host' => env('CACHE_HOST', env('MEMCACHED_HOST', '127.0.0.1')),
+                    'port' => env('CACHE_PORT', env('MEMCACHED_PORT', 11211)),
+                    'weight' => env('CACHE_WEIGHT', env('MEMCACHED_WEIGHT', 100)),
                 ],
             ],
         ],
-        'redis'     => [
-            'driver'     => 'redis',
-            'connection' => 'default',
+
+        'redis' => [
+            'driver' => 'redis',
+            'connection' => 'cache',
         ],
 
     ],
+
     /*
     |--------------------------------------------------------------------------
     | Cache Key Prefix
@@ -71,6 +86,18 @@ return [
     |
     */
 
-    'prefix'  => (env('DF_STANDALONE', true))? 'dreamfactory' : Managed::getCacheKeyPrefix(),
+    'prefix' => env('CACHE_PREFIX', str_slug(env('APP_NAME', 'laravel'), '_').'_cache'),
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cache Default Time To Live
+    |--------------------------------------------------------------------------
+    |
+    | When the application does not specify a TTL, use this instead.
+    |
+    */
+
+    'default_ttl' => env('CACHE_DEFAULT_TTL', env('DF_CACHE_TTL', 300)), // old env for upgrades
 
 ];

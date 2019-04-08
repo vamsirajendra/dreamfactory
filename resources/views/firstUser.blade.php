@@ -67,6 +67,21 @@
                         </p>
 
                         <div class="form-group">
+                            <label for="username" class="sr-only">Username</label>
+
+                            <div class="input-group">
+                                <span class="input-group-addon bg_dg"><i class="fa fa-user fa-fw"></i></span>
+
+                                <input tabindex="1"
+                                       class="form-control username"
+                                       autofocus
+                                       type="text"
+                                       id="username"
+                                       name="username" placeholder="{{ $username_placeholder }}"
+                                       value="{{ $username }}" />
+                            </div>
+                        </div>
+                        <div class="form-group">
                             <label for="email" class="sr-only">Email Address</label>
 
                             <div class="input-group">
@@ -77,7 +92,7 @@
                                        autofocus
                                        type="email"
                                        id="email"
-                                       name="email" placeholder="Email Address"
+                                       name="email" placeholder="{{ $email_placeholder }}"
                                        value="{{ $email }}" />
                             </div>
                         </div>
@@ -157,7 +172,7 @@
 
 
                         <div class="form-buttons">
-                            <button type="submit" class="btn btn-success pull-right">Create</button>
+                            <button type="submit" tabindex="7" class="btn btn-success pull-right">Create</button>
                         </div>
 
                     </div>
@@ -175,7 +190,7 @@
                 ); ?>. All Rights Reserved.
             </p>
         </span> <span class="pull-right dsp-footer-version"><p class="footer-text">
-                <a href="https://github.com/dreamfactorysoftware/dsp-core/"
+                <a href="https://github.com/dreamfactorysoftware/dreamfactory/"
                    target="_blank">v{{$version}}</a>
             </p></span>
     </div>

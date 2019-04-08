@@ -1,11 +1,13 @@
-<?php namespace DreamFactory\Http\Controllers;
+<?php
 
-use Illuminate\Foundation\Bus\DispatchesCommands;
+namespace DreamFactory\Http\Controllers;
+
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-abstract class Controller extends BaseController
+class Controller extends BaseController
 {
-
-    use DispatchesCommands, ValidatesRequests;
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 }
